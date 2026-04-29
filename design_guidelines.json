@@ -1,0 +1,131 @@
+{
+  "theme": "light",
+  "archetype": "Archetype 6 (Vibrant Play + Neo-Brutalist)",
+  "typography": {
+    "primary_font": "Cabinet Grotesk, sans-serif",
+    "body_font": "Figtree, sans-serif",
+    "hierarchy": {
+      "h1": "text-5xl sm:text-6xl font-black tracking-tight uppercase",
+      "h2": "text-3xl sm:text-4xl font-extrabold tracking-tight",
+      "h3": "text-xl sm:text-2xl font-bold",
+      "h4": "text-lg font-bold",
+      "body": "text-base font-medium leading-relaxed",
+      "small": "text-sm font-semibold uppercase tracking-widest"
+    }
+  },
+  "colors": {
+    "background": "#F4F4F5",
+    "surface": "#FFFFFF",
+    "primary": "#FF4500",
+    "primary_hover": "#E03C00",
+    "secondary": "#00C3FF",
+    "accent_yellow": "#FFD700",
+    "accent_pink": "#FF007F",
+    "accent_green": "#39FF14",
+    "text_main": "#09090B",
+    "text_muted": "#52525B",
+    "border_hard": "#09090B"
+  },
+  "layout": {
+    "spacing_scale": "p-4, p-6, p-8, p-12",
+    "grid_strategy": "Tetris Grid with strong masonry influences. Use generous gaps (gap-6 to gap-8).",
+    "container_max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "borders": "border-3 border-[#09090B]",
+    "radius": "rounded-none md:rounded-sm",
+    "shadows": {
+      "brutalist_sm": "4px 4px 0px 0px #09090B",
+      "brutalist_md": "6px 6px 0px 0px #09090B",
+      "brutalist_lg": "10px 10px 0px 0px #09090B",
+      "brutalist_active": "0px 0px 0px 0px #09090B"
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "bg-primary text-white border-3 border-[#09090B] font-bold uppercase tracking-wider px-6 py-3 transition-all",
+      "hover": "hover:-translate-y-1 hover:-translate-x-1 shadow-[6px_6px_0px_0px_#09090B]",
+      "active": "active:translate-y-0 active:translate-x-0 active:shadow-none"
+    },
+    "cards": {
+      "thread_card": "bg-white border-3 border-[#09090B] shadow-[4px_4px_0px_0px_#09090B] p-6 transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#09090B]",
+      "category_card": "relative overflow-hidden bg-accent_yellow border-3 border-[#09090B] shadow-[6px_6px_0px_0px_#09090B] p-8"
+    },
+    "inputs": {
+      "text": "bg-white border-3 border-[#09090B] p-4 font-body text-base focus:ring-0 focus:outline-none focus:shadow-[4px_4px_0px_0px_#09090B]",
+      "markdown_editor": "border-3 border-[#09090B] shadow-[4px_4px_0px_0px_#09090B] bg-white min-h-[300px]"
+    },
+    "badges": {
+      "tag": "bg-secondary text-[#09090B] border-2 border-[#09090B] px-3 py-1 font-bold text-xs uppercase"
+    },
+    "avatar": {
+      "style": "border-2 border-[#09090B] bg-accent_pink object-cover rounded-full shadow-[2px_2px_0px_0px_#09090B]"
+    },
+    "upvote_downvote": {
+      "container": "flex flex-col items-center bg-gray-100 border-2 border-[#09090B] rounded-sm p-2 shadow-[2px_2px_0px_0px_#09090B]",
+      "active_upvote": "text-primary",
+      "active_downvote": "text-blue-600"
+    }
+  },
+  "motion": {
+    "hover_state": "Hard translates (e.g. -translate-y-1) paired with hard shadow increases. No soft fading.",
+    "page_transition": "None or very fast cut. Avoid slow crossfades."
+  },
+  "media": {
+    "icons": {
+      "library": "@phosphor-icons/react",
+      "weight": "bold",
+      "instructions": "Use bold weight to match the heavy neo-brutalist borders."
+    },
+    "image_urls": {
+      "avatars": [
+        {
+          "url": "https://images.unsplash.com/photo-1536759078151-61c8b6f156a8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxleHByZXNzaXZlJTIwY29sb3JmdWwlMjBwb3J0cmFpdCUyMGF2YXRhcnxlbnwwfHx8fDE3Nzc0NTU2MzJ8MA&ixlib=rb-4.1.0&q=85",
+          "description": "Man face painting (creative user)",
+          "category": "user_avatar_placeholder"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1639127826754-dc4a1a34c2ac?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwyfHxleHByZXNzaXZlJTIwY29sb3JmdWwlMjBwb3J0cmFpdCUyMGF2YXRhcnxlbnwwfHx8fDE3Nzc0NTU2MzJ8MA&ixlib=rb-4.1.0&q=85",
+          "description": "Red hair woman posing",
+          "category": "user_avatar_placeholder"
+        },
+        {
+          "url": "https://images.pexels.com/photos/8638618/pexels-photo-8638618.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+          "description": "Woman with blue braids",
+          "category": "user_avatar_placeholder"
+        }
+      ],
+      "category_backgrounds": [
+        {
+          "url": "https://images.unsplash.com/photo-1751644332113-2004a1b143f1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwxfHxib2xkJTIwY29sb3JmdWwlMjBhYnN0cmFjdCUyMHNoYXBlcyUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzc3NDU1NjMyfDA&ixlib=rb-4.1.0&q=85",
+          "description": "3D colorful shapes for top banner",
+          "category": "hero_banner"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1773775098056-1a24bdfdf763?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxnZW9tZXRyaWMlMjBib2xkJTIweWVsbG93JTIwcGluayUyMGJsdWUlMjBwYXR0ZXJufGVufDB8fHx8MTc3NzQ1NTY0NHww&ixlib=rb-4.1.0&q=85",
+          "description": "Abstract geometric pattern",
+          "category": "category_cover"
+        }
+      ],
+      "logos": [
+        {
+          "url": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg",
+          "description": "Google Social Login icon",
+          "category": "social_auth_icon"
+        }
+      ]
+    }
+  },
+  "accessibility": {
+    "focus_states": "focus:ring-0 focus:outline-none focus:border-primary focus:shadow-[4px_4px_0px_0px_#FF4500]",
+    "contrast": "Extremely high contrast by default (Black on White/Vibrant colors)."
+  },
+  "instructions_to_main_agent": [
+    "Build a Neo-Brutalist inspired layout with thick black borders (border-3) and solid black offset shadows to create a bold, raw aesthetic.",
+    "Do NOT use soft drop shadows (shadow-md, shadow-lg etc.). Use custom hard shadows like `shadow-[4px_4px_0px_0px_#09090B]` on all interactive elements.",
+    "Inject personality into empty states and loaders. Avoid sterile UI.",
+    "Implement Markdown editor using a minimal UI with brutalist styling (thick borders).",
+    "For the thread feed, use varied card sizing (some span more columns if they have images) using CSS masonry or unequal grid spans.",
+    "Use Phosphor Icons (bold weight) for all iconography to match the thick borders.",
+    "Avoid gradients at all costs. Stick to flat, highly saturated colors for tags, banners, and buttons.",
+    "Ensure all interactive elements have data-testid attributes for testing."
+  ]
+}

@@ -62,13 +62,13 @@ export default function Profile() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8" data-testid="profile-page">
-      <div className="brutal-card p-6 bg-[#FFD700] mb-6 flex items-start gap-5 flex-wrap">
+      <div className="brutal-card p-6 bg-[#EFE4D2] mb-6 flex items-start gap-5 flex-wrap">
         <div className="relative">
-          <div className="w-24 h-24 border-[3px] border-[#09090B] brutal-shadow bg-[#FF007F] overflow-hidden">
+          <div className="w-24 h-24 border-[3px] border-[#09090B] brutal-shadow bg-[#A23B47] overflow-hidden">
             {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : <span className="font-display text-white text-4xl flex items-center justify-center h-full">{profile.name?.[0]?.toUpperCase()}</span>}
           </div>
           {isMe && (
-            <label className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border-[3px] border-[#09090B] flex items-center justify-center cursor-pointer hover:bg-[#39FF14]" data-testid="upload-avatar-btn">
+            <label className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border-[3px] border-[#09090B] flex items-center justify-center cursor-pointer hover:bg-[#7A8B5C]" data-testid="upload-avatar-btn">
               <ImageIcon weight="bold" size={14} />
               <input type="file" accept="image/*" hidden onChange={uploadAvatar} disabled={uploading} />
             </label>
@@ -78,10 +78,10 @@ export default function Profile() {
           {editing ? (
             <div className="space-y-3">
               <input data-testid="profile-name-input" value={name} onChange={(e) => setName(e.target.value)} className="brutal-input bg-white" />
-              <textarea data-testid="profile-bio-input" value={bio} onChange={(e) => setBio(e.target.value)} rows={2} className="brutal-input bg-white" placeholder="Tell us something" />
+              <textarea data-testid="profile-bio-input" value={bio} onChange={(e) => setBio(e.target.value)} rows={2} className="brutal-input bg-white" placeholder="Reci nešto o sebi" />
               <div className="flex gap-2">
-                <button onClick={save} className="brutal-btn" data-testid="save-profile">SAVE</button>
-                <button onClick={() => setEditing(false)} className="brutal-btn brutal-btn--ghost">CANCEL</button>
+                <button onClick={save} className="brutal-btn" data-testid="save-profile">SAČUVAJ</button>
+                <button onClick={() => setEditing(false)} className="brutal-btn brutal-btn--ghost">OTKAŽI</button>
               </div>
             </div>
           ) : (
@@ -94,18 +94,18 @@ export default function Profile() {
               {profile.bio && <p className="mt-2">{profile.bio}</p>}
               <div className="mt-3 flex gap-3 font-mono text-sm flex-wrap">
                 <span className="bg-white border-2 border-[#09090B] px-3 py-1"><Lightning weight="bold" size={12} className="inline mr-1"/>{profile.karma} karma</span>
-                <span className="bg-white border-2 border-[#09090B] px-3 py-1">{threads.length} threads</span>
-                <span className="bg-white border-2 border-[#09090B] px-3 py-1">Joined {new Date(profile.created_at).toLocaleDateString()}</span>
+                <span className="bg-white border-2 border-[#09090B] px-3 py-1">{threads.length} tema</span>
+                <span className="bg-white border-2 border-[#09090B] px-3 py-1">Pridružio se {new Date(profile.created_at).toLocaleDateString()}</span>
               </div>
-              {isMe && <button data-testid="edit-profile-btn" onClick={() => setEditing(true)} className="brutal-btn brutal-btn--secondary mt-4">EDIT PROFILE</button>}
+              {isMe && <button data-testid="edit-profile-btn" onClick={() => setEditing(true)} className="brutal-btn brutal-btn--secondary mt-4">UREDI PROFIL</button>}
             </>
           )}
         </div>
       </div>
 
-      <h2 className="font-display text-2xl mb-4">THREADS BY {profile.name.toUpperCase()}</h2>
+      <h2 className="font-display text-2xl mb-4">TEME OD {profile.name.toUpperCase()}</h2>
       {threads.length === 0 ? (
-        <div className="brutal-card p-6 text-center">No threads yet.</div>
+        <div className="brutal-card p-6 text-center">Još nema tema.</div>
       ) : (
         <div className="space-y-4" data-testid="user-threads">
           {threads.map((t) => <ThreadCard key={t.thread_id} thread={t} />)}

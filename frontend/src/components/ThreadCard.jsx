@@ -5,8 +5,8 @@ import { ChatCircleDots, PushPin, Lock, Tag } from "@phosphor-icons/react";
 import { API } from "@/lib/api";
 
 const CAT_COLORS = {
-  general: "#FF4500", tech: "#00C3FF", design: "#FF007F",
-  gaming: "#39FF14", music: "#FFD700", random: "#9B5DE5",
+  general: "#9B2C2C", tech: "#1E3A5F", design: "#A23B47",
+  gaming: "#7A8B5C", music: "#EFE4D2", random: "#5C5470",
 };
 
 const resolveImg = (url) => {
@@ -16,14 +16,14 @@ const resolveImg = (url) => {
 };
 
 export default function ThreadCard({ thread, onChange }) {
-  const color = CAT_COLORS[thread.category] || "#FF4500";
+  const color = CAT_COLORS[thread.category] || "#9B2C2C";
   const avatar = resolveImg(thread.author_avatar);
   const img = resolveImg(thread.image_url);
 
   return (
     <article className="brutal-card relative group" data-testid={`thread-card-${thread.thread_id}`}>
       <div className="flex">
-        <div className="p-3 flex flex-col items-center gap-1 border-r-[3px] border-[#09090B] bg-[#FFF6CC]">
+        <div className="p-3 flex flex-col items-center gap-1 border-r-[3px] border-[#09090B] bg-[#EFE4D2]">
           <VoteButtons
             targetId={thread.thread_id}
             targetType="thread"
@@ -38,13 +38,13 @@ export default function ThreadCard({ thread, onChange }) {
             <Link
               to={`/c/${thread.category}`}
               className="text-xs font-bold uppercase tracking-widest border-2 border-[#09090B] px-2 py-0.5"
-              style={{ background: color, color: ["#FFD700","#39FF14"].includes(color) ? "#09090B" : "#fff" }}
+              style={{ background: color, color: ["#EFE4D2","#7A8B5C"].includes(color) ? "#09090B" : "#fff" }}
               data-testid={`cat-link-${thread.thread_id}`}
             >
               {thread.category}
             </Link>
             {thread.is_pinned && (
-              <span className="text-xs font-bold flex items-center gap-1 bg-[#FFD700] border-2 border-[#09090B] px-2 py-0.5 uppercase">
+              <span className="text-xs font-bold flex items-center gap-1 bg-[#EFE4D2] border-2 border-[#09090B] px-2 py-0.5 uppercase">
                 <PushPin weight="fill" size={12} /> Pinned
               </span>
             )}
@@ -59,7 +59,7 @@ export default function ThreadCard({ thread, onChange }) {
           </div>
 
           <Link to={`/thread/${thread.thread_id}`} data-testid={`thread-title-${thread.thread_id}`}>
-            <h3 className="font-display text-xl sm:text-2xl leading-tight hover:text-[#FF4500] transition-colors line-clamp-2">
+            <h3 className="font-display text-xl sm:text-2xl leading-tight hover:text-[#9B2C2C] transition-colors line-clamp-2">
               {thread.title}
             </h3>
           </Link>
@@ -75,7 +75,7 @@ export default function ThreadCard({ thread, onChange }) {
           {thread.tags?.length > 0 && (
             <div className="mt-3 flex gap-2 flex-wrap">
               {thread.tags.slice(0, 4).map((t) => (
-                <span key={t} className="tag-chip" style={{ background: "#FFD700" }}>
+                <span key={t} className="tag-chip" style={{ background: "#EFE4D2" }}>
                   <Tag weight="bold" size={10} className="mr-1" />{t}
                 </span>
               ))}
@@ -84,13 +84,13 @@ export default function ThreadCard({ thread, onChange }) {
 
           <div className="mt-4 flex items-center justify-between flex-wrap gap-2">
             <Link to={`/profile/${thread.author_id}`} className="flex items-center gap-2 group/author" data-testid={`author-link-${thread.thread_id}`}>
-              <div className="w-7 h-7 border-2 border-[#09090B] bg-[#FF007F] overflow-hidden">
+              <div className="w-7 h-7 border-2 border-[#09090B] bg-[#A23B47] overflow-hidden">
                 {avatar ? <img src={avatar} className="w-full h-full object-cover" alt="" /> : <span className="font-display text-white text-xs flex items-center justify-center h-full">{thread.author_name?.[0]?.toUpperCase()}</span>}
               </div>
-              <span className="text-sm font-bold group-hover/author:text-[#FF4500]">{thread.author_name}</span>
+              <span className="text-sm font-bold group-hover/author:text-[#9B2C2C]">{thread.author_name}</span>
             </Link>
-            <Link to={`/thread/${thread.thread_id}`} className="flex items-center gap-1 text-sm font-bold text-zinc-700 hover:text-[#FF4500]" data-testid={`comments-link-${thread.thread_id}`}>
-              <ChatCircleDots weight="bold" size={16} /> {thread.comment_count} comments
+            <Link to={`/thread/${thread.thread_id}`} className="flex items-center gap-1 text-sm font-bold text-zinc-700 hover:text-[#9B2C2C]" data-testid={`comments-link-${thread.thread_id}`}>
+              <ChatCircleDots weight="bold" size={16} /> {thread.comment_count} komentara
             </Link>
           </div>
         </div>

@@ -28,26 +28,26 @@ export default function VoteButtons({ targetId, targetType, initial, onChange, v
   };
 
   const containerCls = vertical
-    ? "flex flex-col items-center bg-[#FFF6CC] border-[3px] border-[#09090B] brutal-shadow w-12 py-2"
-    : "flex items-center gap-1 bg-[#FFF6CC] border-[2px] border-[#09090B] px-2 py-1";
+    ? "flex flex-col items-center bg-[#EFE4D2] border-[3px] border-[#09090B] brutal-shadow w-12 py-2"
+    : "flex items-center gap-1 bg-[#EFE4D2] border-[2px] border-[#09090B] px-2 py-1";
 
   return (
     <div className={containerCls} data-testid={`vote-${targetType}-${targetId}`}>
       <button
         data-testid={`upvote-${targetId}`}
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); cast(1); }}
-        className={`p-1 transition-transform ${vote === 1 ? "text-[#FF4500] scale-110" : "text-[#09090B] hover:text-[#FF4500]"}`}
+        className={`p-1 transition-transform ${vote === 1 ? "text-[#9B2C2C] scale-110" : "text-[#09090B] hover:text-[#9B2C2C]"}`}
         aria-label="Upvote"
       >
         <ArrowFatUp weight={vote === 1 ? "fill" : "bold"} size={vertical ? 22 : 18} />
       </button>
-      <span className={`font-display text-sm ${score > 0 ? "text-[#FF4500]" : score < 0 ? "text-[#00C3FF]" : "text-[#09090B]"}`} data-testid={`score-${targetId}`}>
+      <span className={`font-display text-sm ${score > 0 ? "text-[#9B2C2C]" : score < 0 ? "text-[#1E3A5F]" : "text-[#09090B]"}`} data-testid={`score-${targetId}`}>
         {score}
       </span>
       <button
         data-testid={`downvote-${targetId}`}
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); cast(-1); }}
-        className={`p-1 transition-transform ${vote === -1 ? "text-[#00C3FF] scale-110" : "text-[#09090B] hover:text-[#00C3FF]"}`}
+        className={`p-1 transition-transform ${vote === -1 ? "text-[#1E3A5F] scale-110" : "text-[#09090B] hover:text-[#1E3A5F]"}`}
         aria-label="Downvote"
       >
         <ArrowFatDown weight={vote === -1 ? "fill" : "bold"} size={vertical ? 22 : 18} />

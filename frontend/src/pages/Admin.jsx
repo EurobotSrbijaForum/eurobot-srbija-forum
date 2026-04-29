@@ -31,14 +31,14 @@ export default function Admin() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8" data-testid="admin-page">
       <div className="brutal-card p-6 bg-[#09090B] text-white mb-6 flex items-center gap-3">
-        <ShieldStar weight="fill" size={32} color="#FFD700" />
+        <ShieldStar weight="fill" size={32} color="#EFE4D2" />
         <h1 className="font-display text-3xl">ADMIN PANEL</h1>
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="brutal-card p-5 bg-[#FF4500] text-white"><div className="font-mono text-xs uppercase">Threads</div><div className="font-display text-4xl">{stats.threads ?? 0}</div></div>
-        <div className="brutal-card p-5 bg-[#00C3FF]"><div className="font-mono text-xs uppercase">Comments</div><div className="font-display text-4xl">{stats.comments ?? 0}</div></div>
-        <div className="brutal-card p-5 bg-[#FFD700]"><div className="font-mono text-xs uppercase">Users</div><div className="font-display text-4xl">{stats.users ?? 0}</div></div>
+        <div className="brutal-card p-5 bg-[#9B2C2C] text-white"><div className="font-mono text-xs uppercase">Threads</div><div className="font-display text-4xl">{stats.threads ?? 0}</div></div>
+        <div className="brutal-card p-5 bg-[#1E3A5F]"><div className="font-mono text-xs uppercase">Comments</div><div className="font-display text-4xl">{stats.comments ?? 0}</div></div>
+        <div className="brutal-card p-5 bg-[#EFE4D2]"><div className="font-mono text-xs uppercase">Users</div><div className="font-display text-4xl">{stats.users ?? 0}</div></div>
       </div>
 
       <h2 className="font-display text-2xl mb-3">ALL THREADS</h2>
@@ -50,15 +50,15 @@ export default function Admin() {
           <tbody>
             {threads.map((t) => (
               <tr key={t.thread_id} className="border-t-2 border-[#09090B]" data-testid={`admin-row-${t.thread_id}`}>
-                <td className="p-3 max-w-xs truncate"><Link to={`/thread/${t.thread_id}`} className="font-bold hover:text-[#FF4500]">{t.title}</Link></td>
+                <td className="p-3 max-w-xs truncate"><Link to={`/thread/${t.thread_id}`} className="font-bold hover:text-[#9B2C2C]">{t.title}</Link></td>
                 <td className="p-3 text-center font-mono text-xs">{t.category}</td>
                 <td className="p-3 text-center font-mono">{t.score}</td>
                 <td className="p-3 text-center">{t.is_pinned ? "✓" : ""}</td>
                 <td className="p-3 text-center">{t.is_locked ? "✓" : ""}</td>
                 <td className="p-3 flex gap-2 justify-center">
-                  <button onClick={() => togglePin(t.thread_id)} className="p-2 border-2 border-[#09090B] hover:bg-[#FFD700]" data-testid={`admin-pin-${t.thread_id}`}><PushPin weight="bold" size={14}/></button>
-                  <button onClick={() => toggleLock(t.thread_id)} className="p-2 border-2 border-[#09090B] hover:bg-[#00C3FF]" data-testid={`admin-lock-${t.thread_id}`}><Lock weight="bold" size={14}/></button>
-                  <button onClick={() => del(t.thread_id)} className="p-2 border-2 border-[#09090B] hover:bg-[#FF4500] hover:text-white" data-testid={`admin-delete-${t.thread_id}`}><Trash weight="bold" size={14}/></button>
+                  <button onClick={() => togglePin(t.thread_id)} className="p-2 border-2 border-[#09090B] hover:bg-[#EFE4D2]" data-testid={`admin-pin-${t.thread_id}`}><PushPin weight="bold" size={14}/></button>
+                  <button onClick={() => toggleLock(t.thread_id)} className="p-2 border-2 border-[#09090B] hover:bg-[#1E3A5F]" data-testid={`admin-lock-${t.thread_id}`}><Lock weight="bold" size={14}/></button>
+                  <button onClick={() => del(t.thread_id)} className="p-2 border-2 border-[#09090B] hover:bg-[#9B2C2C] hover:text-white" data-testid={`admin-delete-${t.thread_id}`}><Trash weight="bold" size={14}/></button>
                 </td>
               </tr>
             ))}

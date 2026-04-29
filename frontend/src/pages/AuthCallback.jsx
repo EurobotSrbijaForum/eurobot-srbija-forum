@@ -32,7 +32,7 @@ export default function AuthCallback() {
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center" data-testid="auth-callback">
-      <div className="brutal-card p-8 bg-[#FFD700]">
+      <div className="brutal-card p-8 bg-[#EFE4D2]">
         <p className="font-display text-2xl">SIGNING YOU IN…</p>
       </div>
     </div>

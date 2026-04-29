@@ -59,55 +59,55 @@ export default function NewThread() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8" data-testid="new-thread-page">
-      <h1 className="font-display text-4xl mb-6">START A THREAD</h1>
+      <h1 className="font-display text-4xl mb-6">NOVA TEMA</h1>
       <form onSubmit={submit} className="space-y-5">
         <div>
-          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Category</label>
+          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Kategorija</label>
           <select data-testid="category-select" value={category} onChange={(e) => setCategory(e.target.value)} className="brutal-input">
             {categories.map((c) => <option key={c.slug} value={c.slug}>/{c.slug} — {c.name}</option>)}
           </select>
         </div>
 
         <div>
-          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Title</label>
-          <input data-testid="title-input" required maxLength={200} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Make it loud" className="brutal-input" />
+          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Naslov</label>
+          <input data-testid="title-input" required maxLength={200} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Šta želiš da podeliš?" className="brutal-input" />
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="text-xs uppercase font-bold tracking-widest">Body (Markdown supported)</label>
+            <label className="text-xs uppercase font-bold tracking-widest">Sadržaj (Markdown podržan)</label>
             <button type="button" data-testid="toggle-preview" onClick={() => setPreview(!preview)} className="text-xs font-bold flex items-center gap-1 underline">
-              {preview ? <><Pencil size={12} weight="bold" /> Edit</> : <><Eye size={12} weight="bold" /> Preview</>}
+              {preview ? <><Pencil size={12} weight="bold" /> Izmeni</> : <><Eye size={12} weight="bold" /> Pregled</>}
             </button>
           </div>
           {preview ? (
-            <div className="brutal-input min-h-[240px] bg-[#FFF6CC]"><Markdown>{body}</Markdown></div>
+            <div className="brutal-input min-h-[240px] bg-[#EFE4D2]"><Markdown>{body}</Markdown></div>
           ) : (
             <textarea data-testid="body-input" required value={body} onChange={(e) => setBody(e.target.value)} rows={10} placeholder="**Bold** _italic_ `code` …" className="brutal-input font-mono text-sm" />
           )}
         </div>
 
         <div>
-          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Tags (comma separated, max 5)</label>
-          <input data-testid="tags-input" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="react, css, tips" className="brutal-input" />
+          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Tagovi (razdvojeni zarezima, max 5)</label>
+          <input data-testid="tags-input" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="robotika, eurobot, saveti" className="brutal-input" />
         </div>
 
         <div>
-          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Cover image (optional)</label>
+          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Naslovna slika (opciono)</label>
           {imgPreview ? (
             <div className="relative inline-block">
               <img src={imgPreview} alt="" className="max-h-48 border-[3px] border-[#09090B] brutal-shadow" />
-              <button type="button" onClick={() => setImgUrl("")} className="absolute -top-2 -right-2 w-7 h-7 bg-[#FF4500] text-white border-[3px] border-[#09090B]" data-testid="remove-image"><X weight="bold" /></button>
+              <button type="button" onClick={() => setImgUrl("")} className="absolute -top-2 -right-2 w-7 h-7 bg-[#9B2C2C] text-white border-[3px] border-[#09090B]" data-testid="remove-image"><X weight="bold" /></button>
             </div>
           ) : (
             <label className="brutal-btn brutal-btn--secondary cursor-pointer w-fit" data-testid="upload-image-btn">
-              <ImageIcon weight="bold" size={16} /> {uploading ? "UPLOADING…" : "UPLOAD IMAGE"}
+              <ImageIcon weight="bold" size={16} /> {uploading ? "OTPREMANJE…" : "OTPREMI SLIKU"}
               <input type="file" accept="image/*" hidden onChange={upload} disabled={uploading} />
             </label>
           )}
         </div>
 
-        <button data-testid="submit-thread" disabled={busy} className="brutal-btn">{busy ? "POSTING…" : "POST THREAD"}</button>
+        <button data-testid="submit-thread" disabled={busy} className="brutal-btn">{busy ? "OBJAVLJIVANJE…" : "OBJAVI TEMU"}</button>
       </form>
     </div>
   );

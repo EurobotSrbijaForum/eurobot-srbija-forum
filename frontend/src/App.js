@@ -50,7 +50,7 @@ function AppRouter() {
       </Routes>
       <footer className="mt-16 border-t-[3px] border-[#09090B] py-6 bg-white">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm font-bold uppercase tracking-widest" data-testid="footer">
-          BOLT/FORUM · BUILT LOUD · {new Date().getFullYear()}
+          EUROBOT SRBIJA FORUM · {new Date().getFullYear()}
         </div>
       </footer>
     </>

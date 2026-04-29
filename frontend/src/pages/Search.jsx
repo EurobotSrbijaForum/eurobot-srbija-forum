@@ -20,7 +20,7 @@ export default function Search() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8" data-testid="search-page">
-      <div className="brutal-card p-6 bg-[#00C3FF] mb-6 flex items-center gap-3">
+      <div className="brutal-card p-6 bg-[#1E3A5F] mb-6 flex items-center gap-3">
         <MagnifyingGlass weight="bold" size={28} />
         <h1 className="font-display text-3xl">RESULTS FOR "{q}"</h1>
       </div>

@@ -25,10 +25,10 @@ export default function Register() {
     setBusy(true); setErr("");
     try {
       await register(email, password, name);
-      toast.success("Welcome to the forum!");
+      toast.success("Dobrodošao na forum!");
       nav("/");
     } catch (ex) {
-      setErr(formatErr(ex.response?.data?.detail) || "Sign up failed");
+      setErr(formatErr(ex.response?.data?.detail) || "Greška pri registraciji");
     } finally { setBusy(false); }
   };
 
@@ -36,30 +36,30 @@ export default function Register() {
     <div className="max-w-md mx-auto px-4 py-10" data-testid="register-page">
       <div className="brutal-card p-8 bg-white">
         <div className="flex items-center gap-2 mb-6">
-          <Lightning weight="fill" size={32} color="#FF007F" />
-          <h1 className="font-display text-3xl">SIGN UP</h1>
+          <Lightning weight="fill" size={32} color="#A23B47" />
+          <h1 className="font-display text-3xl">REGISTRACIJA</h1>
         </div>
 
         <button onClick={startGoogleLogin} className="brutal-btn brutal-btn--ghost w-full mb-4" data-testid="google-register-btn">
-          <GoogleLogo weight="bold" size={18} /> Continue with Google
+          <GoogleLogo weight="bold" size={18} /> Nastavi sa Google-om
         </button>
 
         <div className="flex items-center gap-3 my-4">
           <div className="flex-1 border-t-2 border-[#09090B]"></div>
-          <span className="text-xs font-bold uppercase">or with email</span>
+          <span className="text-xs font-bold uppercase">ili putem email-a</span>
           <div className="flex-1 border-t-2 border-[#09090B]"></div>
         </div>
 
         <form onSubmit={submit} className="space-y-4">
-          <input data-testid="name-input" required placeholder="display name" value={name} onChange={(e) => setName(e.target.value)} className="brutal-input" />
-          <input data-testid="email-input" type="email" required placeholder="email@you.com" value={email} onChange={(e) => setEmail(e.target.value)} className="brutal-input" />
-          <input data-testid="password-input" type="password" required minLength={6} placeholder="password (min 6)" value={password} onChange={(e) => setPassword(e.target.value)} className="brutal-input" />
-          {err && <div className="bg-[#FF4500] text-white p-3 border-[3px] border-[#09090B] font-bold text-sm" data-testid="register-error">{err}</div>}
-          <button data-testid="register-submit" disabled={busy} className="brutal-btn brutal-btn--pink w-full">{busy ? "CREATING…" : "CREATE ACCOUNT"}</button>
+          <input data-testid="name-input" required placeholder="korisničko ime" value={name} onChange={(e) => setName(e.target.value)} className="brutal-input" />
+          <input data-testid="email-input" type="email" required placeholder="email@primer.com" value={email} onChange={(e) => setEmail(e.target.value)} className="brutal-input" />
+          <input data-testid="password-input" type="password" required minLength={6} placeholder="lozinka (min 6 karaktera)" value={password} onChange={(e) => setPassword(e.target.value)} className="brutal-input" />
+          {err && <div className="bg-[#9B2C2C] text-white p-3 border-[3px] border-[#09090B] font-bold text-sm" data-testid="register-error">{err}</div>}
+          <button data-testid="register-submit" disabled={busy} className="brutal-btn brutal-btn--pink w-full">{busy ? "KREIRANJE…" : "KREIRAJ NALOG"}</button>
         </form>
 
         <p className="mt-5 text-sm">
-          Already have one? <Link to="/login" className="font-bold underline text-[#FF007F]" data-testid="goto-login">Sign in</Link>
+          Već imaš nalog? <Link to="/login" className="font-bold underline text-[#A23B47]" data-testid="goto-login">Prijavi se</Link>
         </p>
       </div>
     </div>

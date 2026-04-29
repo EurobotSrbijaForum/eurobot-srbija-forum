@@ -13,6 +13,13 @@ import Admin from "@/pages/Admin";
 import Search from "@/pages/Search";
 import AuthCallback from "@/pages/AuthCallback";
 import { Toaster } from "sonner";
+import { Navigate } from "react-router-dom";
+
+function ProfileRedirect() {
+  // /profile -> /profile/:my_user_id, fallback to /login
+  const stored = typeof window !== "undefined" ? document.cookie.includes("session_token") : false;
+  return <Navigate to={stored ? "/" : "/login"} replace />;
+}
 
 function CategoryRoute() {
   const { pathname } = useLocation();
@@ -37,6 +44,7 @@ function AppRouter() {
         <Route path="/thread/:id" element={<Thread />} />
         <Route path="/c/:slug" element={<CategoryRoute />} />
         <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/profile" element={<ProfileRedirect />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/search" element={<Search />} />
       </Routes>

@@ -505,6 +505,39 @@ async def delete_thread(thread_id: str, user=Depends(current_user)):
     await db.votes.delete_many({"target_id": thread_id})
     return {"ok": True}
 
+class ThreadUpdate(BaseModel):
+    title: Optional[str] = None
+    body: Optional[str] = None
+    category: Optional[str] = None
+    tags: Optional[List[str]] = None
+    image_url: Optional[str] = None
+
+@api_router.put("/threads/{thread_id}")
+async def update_thread(thread_id: str, payload: ThreadUpdate, user=Depends(current_user)):
+    t = await db.threads.find_one({"thread_id": thread_id})
+    if not t:
+        raise HTTPException(404, "Not found")
+    if t["author_id"] != user["user_id"] and user.get("role") != "admin":
+        raise HTTPException(403, "Forbidden")
+    update = {}
+    if payload.title is not None:
+        update["title"] = payload.title.strip()
+    if payload.body is not None:
+        update["body"] = payload.body
+    if payload.category is not None:
+        cat = await db.categories.find_one({"slug": payload.category})
+        if not cat:
+            raise HTTPException(400, "Invalid category")
+        update["category"] = payload.category
+    if payload.tags is not None:
+        update["tags"] = [tg.strip().lower() for tg in payload.tags if tg.strip()][:5]
+    if payload.image_url is not None:
+        update["image_url"] = payload.image_url or None
+    update["edited_at"] = datetime.now(timezone.utc).isoformat()
+    await db.threads.update_one({"thread_id": thread_id}, {"$set": update})
+    updated = await db.threads.find_one({"thread_id": thread_id}, {"_id": 0})
+    return await enrich_thread(updated, user)
+
 @api_router.post("/threads/{thread_id}/pin")
 async def pin_thread(thread_id: str, user=Depends(current_user)):
     if user.get("role") != "admin":
@@ -581,6 +614,26 @@ async def delete_comment(comment_id: str, user=Depends(current_user)):
     await db.votes.delete_many({"target_id": comment_id})
     return {"ok": True}
 
+class CommentUpdate(BaseModel):
+    body: str
+
+@api_router.put("/comments/{comment_id}")
+async def update_comment(comment_id: str, payload: CommentUpdate, user=Depends(current_user)):
+    c = await db.comments.find_one({"comment_id": comment_id})
+    if not c:
+        raise HTTPException(404, "Not found")
+    if c["author_id"] != user["user_id"] and user.get("role") != "admin":
+        raise HTTPException(403, "Forbidden")
+    await db.comments.update_one(
+        {"comment_id": comment_id},
+        {"$set": {"body": payload.body, "edited_at": datetime.now(timezone.utc).isoformat()}},
+    )
+    updated = await db.comments.find_one({"comment_id": comment_id}, {"_id": 0})
+    v = await db.votes.find_one({"user_id": user["user_id"], "target_id": comment_id}, {"_id": 0})
+    updated["user_vote"] = v["value"] if v else 0
+    updated["score"] = updated.get("upvotes", 0) - updated.get("downvotes", 0)
+    return updated
+
 # ------------------ Votes ------------------
 @api_router.post("/vote")
 async def vote(payload: VoteIn, user=Depends(current_user)):
@@ -619,11 +672,16 @@ async def vote(payload: VoteIn, user=Depends(current_user)):
 
 # ------------------ Users ------------------
 @api_router.get("/users/{user_id}")
-async def get_user(user_id: str):
+async def get_user(user_id: str, request: Request):
     u = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
     if not u:
         raise HTTPException(404, "User not found")
-    return serialize_user(u)
+    out = serialize_user(u)
+    # Hide email when viewing someone else's profile
+    me = await optional_user(request)
+    if not me or me["user_id"] != user_id:
+        out["email"] = None
+    return out
 
 @api_router.get("/users/{user_id}/threads")
 async def user_threads(user_id: str, request: Request):
@@ -646,16 +704,28 @@ async def update_me(payload: ProfileUpdate, user=Depends(current_user)):
     return serialize_user(u)
 
 # ------------------ Upload ------------------
+LIMITS = {
+    "avatar": 2 * 1024 * 1024,   # 2 MB for profile pictures
+    "cover": 5 * 1024 * 1024,    # 5 MB for thread cover images
+    "default": 5 * 1024 * 1024,  # 5 MB fallback
+}
+
 @api_router.post("/upload")
-async def upload_image(file: UploadFile = File(...), user=Depends(current_user)):
+async def upload_image(
+    file: UploadFile = File(...),
+    purpose: str = Query("cover", pattern="^(avatar|cover)$"),
+    user=Depends(current_user),
+):
     allowed = {"image/jpeg", "image/png", "image/gif", "image/webp"}
     ct = file.content_type or "application/octet-stream"
     if ct not in allowed:
-        raise HTTPException(400, "Only image files allowed")
+        raise HTTPException(400, "Only image files allowed (jpeg, png, gif, webp)")
     ext = (file.filename or "").rsplit(".", 1)[-1].lower() or "bin"
     data = await file.read()
-    if len(data) > 5 * 1024 * 1024:
-        raise HTTPException(400, "Max 5MB")
+    max_bytes = LIMITS.get(purpose, LIMITS["default"])
+    if len(data) > max_bytes:
+        max_mb = max_bytes // (1024 * 1024)
+        raise HTTPException(400, f"Slika prelazi maksimum od {max_mb}MB za {purpose}")
     path = f"{APP_NAME}/uploads/{user['user_id']}/{uuid.uuid4().hex}.{ext}"
     result = put_object(path, data, ct)
     file_id = str(uuid.uuid4())
@@ -663,13 +733,13 @@ async def upload_image(file: UploadFile = File(...), user=Depends(current_user))
         "id": file_id,
         "storage_path": result["path"],
         "uploader_id": user["user_id"],
+        "purpose": purpose,
         "content_type": ct,
         "size": result.get("size", len(data)),
         "is_deleted": False,
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
-    backend_origin = ""  # use relative URL
-    return {"file_id": file_id, "url": f"/api/files/{file_id}"}
+    return {"file_id": file_id, "url": f"/api/files/{file_id}", "size": len(data)}
 
 @api_router.get("/files/{file_id}")
 async def get_file(file_id: str):

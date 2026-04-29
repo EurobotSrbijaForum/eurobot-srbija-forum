@@ -45,14 +45,19 @@ export default function Profile() {
   const uploadAvatar = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Avatar prelazi 2MB limit");
+      e.target.value = "";
+      return;
+    }
     setUploading(true);
     const fd = new FormData(); fd.append("file", file);
     try {
-      const { data } = await api.post("/upload", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      const { data } = await api.post("/upload?purpose=avatar", fd, { headers: { "Content-Type": "multipart/form-data" } });
       const updated = await api.put("/users/me", { avatar_url: data.url });
       setProfile(updated.data); setUser(updated.data);
-      toast.success("Avatar updated");
-    } catch (ex) { toast.error(formatErr(ex.response?.data?.detail) || "Upload failed"); }
+      toast.success("Avatar ažuriran");
+    } catch (ex) { toast.error(formatErr(ex.response?.data?.detail) || "Otpremanje neuspelo"); }
     finally { setUploading(false); }
   };
 
@@ -90,7 +95,7 @@ export default function Profile() {
                 {profile.name}
                 {profile.role === "admin" && <span className="bg-[#09090B] text-white text-xs px-2 py-1 flex items-center gap-1 font-display"><ShieldStar weight="fill" size={12}/>ADMIN</span>}
               </h1>
-              <p className="text-sm font-mono text-zinc-700 mt-1">{profile.email}</p>
+              <p className="text-sm font-mono text-zinc-700 mt-1">{profile.email || <span className="italic text-zinc-400">email skriven</span>}</p>
               {profile.bio && <p className="mt-2">{profile.bio}</p>}
               <div className="mt-3 flex gap-3 font-mono text-sm flex-wrap">
                 <span className="bg-white border-2 border-[#09090B] px-3 py-1"><Lightning weight="bold" size={12} className="inline mr-1"/>{profile.karma} karma</span>

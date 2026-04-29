@@ -28,15 +28,20 @@ export default function NewThread() {
   const upload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Slika prelazi 5MB limit za naslovnu");
+      e.target.value = "";
+      return;
+    }
     setUploading(true);
     const fd = new FormData();
     fd.append("file", file);
     try {
-      const { data } = await api.post("/upload", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      const { data } = await api.post("/upload?purpose=cover", fd, { headers: { "Content-Type": "multipart/form-data" } });
       setImgUrl(data.url);
-      toast.success("Image uploaded");
+      toast.success("Slika otpremljena");
     } catch (ex) {
-      toast.error(formatErr(ex.response?.data?.detail) || "Upload failed");
+      toast.error(formatErr(ex.response?.data?.detail) || "Otpremanje neuspelo");
     } finally { setUploading(false); }
   };
 
@@ -93,7 +98,7 @@ export default function NewThread() {
         </div>
 
         <div>
-          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Naslovna slika (opciono)</label>
+          <label className="block text-xs uppercase font-bold tracking-widest mb-1">Naslovna slika (opciono, max 5MB)</label>
           {imgPreview ? (
             <div className="relative inline-block">
               <img src={imgPreview} alt="" className="max-h-48 border-[3px] border-[#09090B] brutal-shadow" />

@@ -11,8 +11,8 @@ const SORTS = [
 ];
 
 const CAT_BG = {
-  general: "#9B2C2C", elektronika: "#1E3A5F", programiranje: "#A23B47",
-  mehanika: "#7A8B5C", random: "#5C5470",
+  general: "#9B2C2C", elektronika: "#1E3A5F", programiranje: "#7A8B5C",
+  mehanika: "#A23B47", random: "#5C5470",
 };
 
 export default function Home({ category = null }) {
@@ -119,8 +119,8 @@ export default function Home({ category = null }) {
                 <Link
                   key={c.slug}
                   to={`/c/${c.slug}`}
-                  className="flex items-center justify-between p-2 border-2 border-[#09090B] hover:translate-x-1 transition-transform"
-                  style={{ background: CAT_BG[c.slug] || "#fff", color: ["general","tech","design","random"].includes(c.slug) ? "white" : "#09090B" }}
+                  className="flex items-center justify-between p-2 border-2 border-[#09090B] hover:translate-x-1 transition-transform text-white"
+                  style={{ background: CAT_BG[c.slug] || "#9B2C2C" }}
                   data-testid={`cat-${c.slug}`}
                 >
                   <span className="font-bold uppercase text-sm">/{c.slug}</span>

@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import VoteButtons from "@/components/VoteButtons";
 import Markdown from "@/components/Markdown";
 import { toast } from "sonner";
-import { PushPin, Lock, Trash, ChatCircle, ArrowBendUpLeft } from "@phosphor-icons/react";
+import { PushPin, Lock, Trash, ChatCircle, ArrowBendUpLeft, Pencil } from "@phosphor-icons/react";
 
 const resolveImg = (url) => !url ? null : url.startsWith("http") ? url : `${API.replace("/api","")}${url}`;
 const MAX_DEPTH = 5;
@@ -44,11 +44,14 @@ function countDescendants(id, childrenOf) {
   return n;
 }
 
-function CommentRow({ comment, depth, childCount, collapsed, onToggleCollapse, onVote, onDelete, threadLocked, replyingTo, setReplyingTo, replyBody, setReplyBody, onReply, busy }) {
+function CommentRow({ comment, depth, childCount, collapsed, onToggleCollapse, onVote, onDelete, onEdit, currentUserId, isAdmin, threadLocked, replyingTo, setReplyingTo, replyBody, setReplyBody, onReply, busy, editingId, setEditingId, editBody, setEditBody }) {
   const c = comment;
   const avatar = resolveImg(c.author_avatar);
   const indent = Math.min(depth, MAX_DEPTH);
   const isCollapsed = collapsed.has(c.comment_id);
+  const canEdit = currentUserId === c.author_id || isAdmin;
+  const canDelete = currentUserId === c.author_id || isAdmin;
+  const isEditing = editingId === c.comment_id;
   return (
     <div
       data-testid={`comment-${c.comment_id}`}
@@ -76,14 +79,49 @@ function CommentRow({ comment, depth, childCount, collapsed, onToggleCollapse, o
               {c.author_name}
             </Link>
             <span className="text-xs text-zinc-500 font-mono">{new Date(c.created_at).toLocaleString()}</span>
+            {c.edited_at && <span className="text-xs italic text-zinc-400">(izmenjeno)</span>}
             {isCollapsed && childCount > 0 && (
               <span className="text-xs font-bold text-[#1E3A5F]">[{childCount} skrivenih]</span>
             )}
-            <button onClick={() => onDelete(c.comment_id)} className="ml-auto text-zinc-400 hover:text-[#9B2C2C]" data-testid={`delete-comment-${c.comment_id}`} aria-label="Delete">
-              <Trash size={14} weight="bold" />
-            </button>
+            <div className="ml-auto flex items-center gap-2">
+              {canEdit && !isEditing && (
+                <button
+                  onClick={() => { setEditingId(c.comment_id); setEditBody(c.body); }}
+                  className="text-zinc-400 hover:text-[#1E3A5F]"
+                  data-testid={`edit-comment-${c.comment_id}`}
+                  aria-label="Uredi"
+                >
+                  <Pencil size={14} weight="bold" />
+                </button>
+              )}
+              {canDelete && (
+                <button onClick={() => onDelete(c.comment_id)} className="text-zinc-400 hover:text-[#9B2C2C]" data-testid={`delete-comment-${c.comment_id}`} aria-label="Obriši">
+                  <Trash size={14} weight="bold" />
+                </button>
+              )}
+            </div>
           </div>
-          <Markdown>{c.body}</Markdown>
+          {isEditing ? (
+            <form
+              onSubmit={(e) => { e.preventDefault(); onEdit(c.comment_id, editBody); }}
+              data-testid={`edit-form-${c.comment_id}`}
+            >
+              <textarea
+                value={editBody}
+                onChange={(e) => setEditBody(e.target.value)}
+                required
+                rows={3}
+                className="brutal-input"
+                data-testid={`edit-input-${c.comment_id}`}
+              />
+              <div className="mt-2 flex gap-2">
+                <button disabled={busy} className="brutal-btn text-xs" data-testid={`save-edit-${c.comment_id}`}>{busy ? "ČUVANJE…" : "SAČUVAJ"}</button>
+                <button type="button" onClick={() => { setEditingId(null); setEditBody(""); }} className="brutal-btn brutal-btn--ghost text-xs">OTKAŽI</button>
+              </div>
+            </form>
+          ) : (
+            <Markdown>{c.body}</Markdown>
+          )}
           {!threadLocked && (
             <button
               onClick={() => setReplyingTo(replyingTo === c.comment_id ? null : c.comment_id)}
@@ -131,6 +169,17 @@ export default function Thread() {
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyBody, setReplyBody] = useState("");
   const [collapsed, setCollapsed] = useState(() => new Set());
+  const [editingId, setEditingId] = useState(null);
+  const [editBody, setEditBody] = useState("");
+  // Thread edit state
+  const [editingThread, setEditingThread] = useState(false);
+  const [tEditTitle, setTEditTitle] = useState("");
+  const [tEditBody, setTEditBody] = useState("");
+  const [tEditCategory, setTEditCategory] = useState("");
+  const [tEditTags, setTEditTags] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => { api.get("/categories").then(r => setCategories(r.data)).catch(() => {}); }, []);
 
   const toggleCollapse = (id) => {
     setCollapsed((prev) => {
@@ -138,6 +187,46 @@ export default function Thread() {
       if (n.has(id)) n.delete(id); else n.add(id);
       return n;
     });
+  };
+
+  const editComment = async (cid, body) => {
+    if (!body.trim()) return;
+    setBusy(true);
+    try {
+      const { data } = await api.put(`/comments/${cid}`, { body });
+      setComments((prev) => prev.map((x) => x.comment_id === cid ? { ...x, ...data } : x));
+      setEditingId(null);
+      setEditBody("");
+      toast.success("Izmenjeno");
+    } catch (ex) {
+      toast.error(formatErr(ex.response?.data?.detail) || "Greška");
+    } finally { setBusy(false); }
+  };
+
+  const startEditThread = () => {
+    if (!thread) return;
+    setTEditTitle(thread.title);
+    setTEditBody(thread.body);
+    setTEditCategory(thread.category);
+    setTEditTags((thread.tags || []).join(", "));
+    setEditingThread(true);
+  };
+
+  const saveThread = async () => {
+    setBusy(true);
+    try {
+      const { data } = await api.put(`/threads/${id}`, {
+        title: tEditTitle,
+        body: tEditBody,
+        category: tEditCategory,
+        tags: tEditTags.split(",").map((t) => t.trim()).filter(Boolean),
+      });
+      setThread(data);
+      setEditingThread(false);
+      toast.success("Tema izmenjena");
+    } catch (ex) {
+      toast.error(formatErr(ex.response?.data?.detail) || "Greška");
+    } finally { setBusy(false); }
   };
 
   const flat = useMemo(() => flattenTree(comments, collapsed), [comments, collapsed]);
@@ -208,39 +297,61 @@ export default function Thread() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6" data-testid="thread-page">
       <article className="brutal-card p-6">
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <Link to={`/c/${thread.category}`} className="text-xs font-bold uppercase tracking-widest border-2 border-[#09090B] px-2 py-0.5 bg-[#9B2C2C] text-white">/{thread.category}</Link>
-          {thread.is_pinned && <span className="text-xs font-bold flex items-center gap-1 bg-[#EFE4D2] border-2 border-[#09090B] px-2 py-0.5 uppercase"><PushPin weight="fill" size={12}/>Zakačeno</span>}
-          {thread.is_locked && <span className="text-xs font-bold flex items-center gap-1 bg-[#09090B] text-white border-2 border-[#09090B] px-2 py-0.5 uppercase"><Lock weight="fill" size={12}/>Zaključano</span>}
-          <span className="ml-auto text-xs font-mono text-zinc-500">{new Date(thread.created_at).toLocaleString()}</span>
-        </div>
-        <h1 className="font-display text-3xl sm:text-4xl leading-tight" data-testid="thread-title">{thread.title}</h1>
+        {editingThread ? (
+          <form onSubmit={(e) => { e.preventDefault(); saveThread(); }} className="space-y-3" data-testid="edit-thread-form">
+            <select value={tEditCategory} onChange={(e) => setTEditCategory(e.target.value)} className="brutal-input">
+              {categories.map((c) => <option key={c.slug} value={c.slug}>/{c.slug}</option>)}
+            </select>
+            <input value={tEditTitle} onChange={(e) => setTEditTitle(e.target.value)} required className="brutal-input" placeholder="Naslov" data-testid="edit-thread-title" />
+            <textarea value={tEditBody} onChange={(e) => setTEditBody(e.target.value)} required rows={8} className="brutal-input font-mono text-sm" placeholder="Sadržaj" data-testid="edit-thread-body" />
+            <input value={tEditTags} onChange={(e) => setTEditTags(e.target.value)} className="brutal-input" placeholder="Tagovi (zarezima)" data-testid="edit-thread-tags" />
+            <div className="flex gap-2">
+              <button disabled={busy} className="brutal-btn" data-testid="save-thread-edit">{busy ? "ČUVANJE…" : "SAČUVAJ"}</button>
+              <button type="button" onClick={() => setEditingThread(false)} className="brutal-btn brutal-btn--ghost">OTKAŽI</button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
+              <Link to={`/c/${thread.category}`} className="text-xs font-bold uppercase tracking-widest border-2 border-[#09090B] px-2 py-0.5 bg-[#9B2C2C] text-white">/{thread.category}</Link>
+              {thread.is_pinned && <span className="text-xs font-bold flex items-center gap-1 bg-[#EFE4D2] border-2 border-[#09090B] px-2 py-0.5 uppercase"><PushPin weight="fill" size={12}/>Zakačeno</span>}
+              {thread.is_locked && <span className="text-xs font-bold flex items-center gap-1 bg-[#09090B] text-white border-2 border-[#09090B] px-2 py-0.5 uppercase"><Lock weight="fill" size={12}/>Zaključano</span>}
+              <span className="ml-auto text-xs font-mono text-zinc-500">{new Date(thread.created_at).toLocaleString()}{thread.edited_at && " · izmenjeno"}</span>
+            </div>
+            <h1 className="font-display text-3xl sm:text-4xl leading-tight" data-testid="thread-title">{thread.title}</h1>
 
-        <Link to={`/profile/${thread.author_id}`} className="inline-flex items-center gap-2 mt-3 text-sm font-bold hover:text-[#9B2C2C]">
-          <div className="w-7 h-7 border-2 border-[#09090B] bg-[#A23B47] overflow-hidden">
-            {avatar ? <img src={avatar} className="w-full h-full object-cover" alt="" /> : <span className="text-white text-xs flex justify-center items-center h-full font-display">{thread.author_name?.[0]?.toUpperCase()}</span>}
-          </div>
-          {thread.author_name}
-        </Link>
+            <Link to={`/profile/${thread.author_id}`} className="inline-flex items-center gap-2 mt-3 text-sm font-bold hover:text-[#9B2C2C]">
+              <div className="w-7 h-7 border-2 border-[#09090B] bg-[#A23B47] overflow-hidden">
+                {avatar ? <img src={avatar} className="w-full h-full object-cover" alt="" /> : <span className="text-white text-xs flex justify-center items-center h-full font-display">{thread.author_name?.[0]?.toUpperCase()}</span>}
+              </div>
+              {thread.author_name}
+            </Link>
 
-        {img && <div className="mt-4 border-[3px] border-[#09090B]"><img src={img} alt="" className="w-full" /></div>}
+            {img && <div className="mt-4 border-[3px] border-[#09090B]"><img src={img} alt="" className="w-full" /></div>}
 
-        <div className="mt-5"><Markdown>{thread.body}</Markdown></div>
+            <div className="mt-5"><Markdown>{thread.body}</Markdown></div>
 
-        {thread.tags?.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {thread.tags.map((t) => <Link key={t} to={`/?tag=${t}`} className="tag-chip">#{t}</Link>)}
-          </div>
+            {thread.tags?.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {thread.tags.map((t) => <Link key={t} to={`/?tag=${t}`} className="tag-chip">#{t}</Link>)}
+              </div>
+            )}
+
+            <div className="mt-5 flex items-center gap-3 flex-wrap">
+              <VoteButtons targetId={thread.thread_id} targetType="thread" initial={{ score: thread.score, user_vote: thread.user_vote }} onChange={(d) => setThread({...thread, ...d})} vertical={false} />
+              {isAdmin && <>
+                <button onClick={togglePin} className="brutal-btn brutal-btn--yellow text-xs" data-testid="pin-btn"><PushPin weight="bold" size={14}/>{thread.is_pinned ? "Otkači" : "Zakači"}</button>
+                <button onClick={toggleLock} className="brutal-btn brutal-btn--ghost text-xs" data-testid="lock-btn"><Lock weight="bold" size={14}/>{thread.is_locked ? "Otključaj" : "Zaključaj"}</button>
+              </>}
+              {(isOwner || isAdmin) && (
+                <>
+                  <button onClick={startEditThread} className="brutal-btn brutal-btn--secondary text-xs" data-testid="edit-thread-btn"><Pencil weight="bold" size={14}/>Uredi</button>
+                  <button onClick={deleteThread} className="brutal-btn brutal-btn--ghost text-xs" data-testid="delete-thread-btn"><Trash weight="bold" size={14}/>Obriši</button>
+                </>
+              )}
+            </div>
+          </>
         )}
-
-        <div className="mt-5 flex items-center gap-3 flex-wrap">
-          <VoteButtons targetId={thread.thread_id} targetType="thread" initial={{ score: thread.score, user_vote: thread.user_vote }} onChange={(d) => setThread({...thread, ...d})} vertical={false} />
-          {isAdmin && <>
-            <button onClick={togglePin} className="brutal-btn brutal-btn--yellow text-xs" data-testid="pin-btn"><PushPin weight="bold" size={14}/>{thread.is_pinned ? "Otkači" : "Zakači"}</button>
-            <button onClick={toggleLock} className="brutal-btn brutal-btn--ghost text-xs" data-testid="lock-btn"><Lock weight="bold" size={14}/>{thread.is_locked ? "Otključaj" : "Zaključaj"}</button>
-          </>}
-          {(isOwner || isAdmin) && <button onClick={deleteThread} className="brutal-btn brutal-btn--ghost text-xs" data-testid="delete-thread-btn"><Trash weight="bold" size={14}/>Obriši</button>}
-        </div>
       </article>
 
       <section className="mt-8" data-testid="comments-section">
@@ -267,6 +378,9 @@ export default function Thread() {
               onToggleCollapse={toggleCollapse}
               onVote={onVote}
               onDelete={deleteComment}
+              onEdit={editComment}
+              currentUserId={user?.user_id}
+              isAdmin={user?.role === "admin"}
               onReply={postReply}
               replyingTo={replyingTo}
               setReplyingTo={setReplyingTo}
@@ -274,6 +388,10 @@ export default function Thread() {
               setReplyBody={setReplyBody}
               busy={busy}
               threadLocked={thread.is_locked}
+              editingId={editingId}
+              setEditingId={setEditingId}
+              editBody={editBody}
+              setEditBody={setEditBody}
             />
           ))}
         </div>

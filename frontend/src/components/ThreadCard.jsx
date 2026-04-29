@@ -5,8 +5,8 @@ import { ChatCircleDots, PushPin, Lock, Tag } from "@phosphor-icons/react";
 import { API } from "@/lib/api";
 
 const CAT_COLORS = {
-  general: "#9B2C2C", elektronika: "#1E3A5F", programiranje: "#A23B47",
-  mehanika: "#7A8B5C", random: "#5C5470",
+  general: "#9B2C2C", elektronika: "#1E3A5F", programiranje: "#7A8B5C",
+  mehanika: "#A23B47", random: "#5C5470",
 };
 
 const resolveImg = (url) => {
@@ -37,8 +37,8 @@ export default function ThreadCard({ thread, onChange }) {
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Link
               to={`/c/${thread.category}`}
-              className="text-xs font-bold uppercase tracking-widest border-2 border-[#09090B] px-2 py-0.5"
-              style={{ background: color, color: ["#EFE4D2","#7A8B5C"].includes(color) ? "#09090B" : "#fff" }}
+              className="text-xs font-bold uppercase tracking-widest border-2 border-[#09090B] px-2 py-0.5 text-white"
+              style={{ background: color }}
               data-testid={`cat-link-${thread.thread_id}`}
             >
               {thread.category}

@@ -1,52 +1,65 @@
-import { useEffect } from "react";
+import React from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
+import Navbar from "@/components/Navbar";
+import Home from "@/pages/Home";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import NewThread from "@/pages/NewThread";
+import Thread from "@/pages/Thread";
+import Profile from "@/pages/Profile";
+import Admin from "@/pages/Admin";
+import Search from "@/pages/Search";
+import AuthCallback from "@/pages/AuthCallback";
+import { Toaster } from "sonner";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+function CategoryRoute() {
+  const { pathname } = useLocation();
+  const slug = pathname.split("/").pop();
+  return <Home category={slug} />;
+}
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
+function AppRouter() {
+  const location = useLocation();
+  // Catch oauth callback regardless of current route
+  if (location.hash?.includes("session_id=")) {
+    return <AuthCallback />;
+  }
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/new" element={<NewThread />} />
+        <Route path="/thread/:id" element={<Thread />} />
+        <Route path="/c/:slug" element={<CategoryRoute />} />
+        <Route path="/profile/:id" element={<Profile />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/search" element={<Search />} />
+      </Routes>
+      <footer className="mt-16 border-t-[3px] border-[#09090B] py-6 bg-white">
+        <div className="max-w-7xl mx-auto px-4 text-center text-sm font-bold uppercase tracking-widest" data-testid="footer">
+          BOLT/FORUM · BUILT LOUD · {new Date().getFullYear()}
+        </div>
+      </footer>
+    </>
   );
-};
+}
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+    <div className="App min-h-screen">
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRouter />
+          <Toaster position="top-right" toastOptions={{
+            style: { border: "3px solid #09090B", boxShadow: "4px 4px 0 0 #09090B", borderRadius: 0, fontFamily: "Space Grotesk", fontWeight: 700 }
+          }} />
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }

@@ -6,9 +6,9 @@ import { API } from "@/lib/api";
 
 const SerbianFlag = ({ size = 56 }) => (
   <svg viewBox="0 0 30 30" width={size} height={size * 2 / 3} aria-label="Serbian flag" className="block">
-    <rect x="0" y="0"  width="30" height="10" fill="#C6363C" />
-    <rect x="0" y="10" width="30" height="10" fill="#1E3A5F" />
-    <rect x="0" y="20" width="30" height="10" fill="#FFFFFF" />
+    <rect x="-10" y="0"  width="50" height="10" fill="#C6363C" />
+    <rect x="-10" y="10" width="50" height="10" fill="#1E3A5F" />
+    <rect x="-10" y="20" width="50" height="10" fill="#FFFFFF" />
   </svg>
 );
 

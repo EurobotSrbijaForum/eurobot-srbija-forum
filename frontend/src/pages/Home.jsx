@@ -11,8 +11,8 @@ const SORTS = [
 ];
 
 const CAT_BG = {
-  general: "#9B2C2C", tech: "#1E3A5F", design: "#A23B47",
-  gaming: "#7A8B5C", music: "#EFE4D2", random: "#5C5470",
+  general: "#9B2C2C", elektronika: "#1E3A5F", programiranje: "#A23B47",
+  mehanika: "#7A8B5C", random: "#5C5470",
 };
 
 export default function Home({ category = null }) {

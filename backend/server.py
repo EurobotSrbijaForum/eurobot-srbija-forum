@@ -254,12 +254,11 @@ async def optional_user(request: Request) -> Optional[dict]:
 
 # ------------------ Seed ------------------
 DEFAULT_CATEGORIES = [
-    {"slug": "general", "name": "General", "description": "Anything goes here", "color": "#FF4500", "icon": "ChatCircle"},
-    {"slug": "tech", "name": "Tech & Dev", "description": "Programming, gadgets, software", "color": "#00C3FF", "icon": "Code"},
-    {"slug": "design", "name": "Design", "description": "UI, UX, art, creativity", "color": "#FF007F", "icon": "Palette"},
-    {"slug": "gaming", "name": "Gaming", "description": "Video games and esports", "color": "#39FF14", "icon": "GameController"},
-    {"slug": "music", "name": "Music", "description": "Share and discuss music", "color": "#FFD700", "icon": "MusicNote"},
-    {"slug": "random", "name": "Random", "description": "Off-topic and fun", "color": "#9B5DE5", "icon": "Sparkle"},
+    {"slug": "general", "name": "General", "description": "Sve i svašta", "color": "#9B2C2C", "icon": "ChatCircle"},
+    {"slug": "elektronika", "name": "Elektronika", "description": "Šeme, komponente, senzori", "color": "#1E3A5F", "icon": "CircuitBoard"},
+    {"slug": "programiranje", "name": "Programiranje", "description": "Kod, algoritmi, software", "color": "#A23B47", "icon": "Code"},
+    {"slug": "mehanika", "name": "Mehanika", "description": "Konstrukcija, motori, materijali", "color": "#7A8B5C", "icon": "GearSix"},
+    {"slug": "random", "name": "Random", "description": "Off-topic i zabava", "color": "#5C5470", "icon": "Sparkle"},
 ]
 
 async def seed():
@@ -271,9 +270,14 @@ async def seed():
     await db.votes.create_index([("user_id", 1), ("target_id", 1)], unique=True)
     await db.threads.create_index([("category", 1), ("created_at", -1)])
 
-    # categories
+    # categories — replace old ones, reassign orphan threads to general
+    valid_slugs = [c["slug"] for c in DEFAULT_CATEGORIES]
     for c in DEFAULT_CATEGORIES:
         await db.categories.update_one({"slug": c["slug"]}, {"$set": c}, upsert=True)
+    # Remove categories not in the new list
+    await db.categories.delete_many({"slug": {"$nin": valid_slugs}})
+    # Reassign threads from removed categories to "general"
+    await db.threads.update_many({"category": {"$nin": valid_slugs}}, {"$set": {"category": "general"}})
 
     # admin
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@forum.com")

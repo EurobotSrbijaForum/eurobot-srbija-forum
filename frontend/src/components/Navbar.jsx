@@ -4,12 +4,11 @@ import { useAuth } from "@/context/AuthContext";
 import { MagnifyingGlass, Plus, SignOut, User, ShieldStar, House } from "@phosphor-icons/react";
 import { API } from "@/lib/api";
 
-const SerbianFlag = ({ size = 40 }) => (
-  <svg viewBox="0 0 30 20" width={size} height={size * 2 / 3} aria-label="Serbian flag" className="block">
-    <rect x="0" y="0"  width="30" height="20" fill="#fff" />
-    <rect x="0" y="0"  width="30" height="6.66" fill="#C6363C" />
-    <rect x="0" y="6.66" width="30" height="6.66" fill="#1E3A5F" />
-    <rect x="0" y="13.33" width="30" height="6.66" fill="#FFFFFF" />
+const SerbianFlag = ({ size = 56 }) => (
+  <svg viewBox="0 0 30 30" width={size} height={size * 2 / 3} aria-label="Serbian flag" className="block">
+    <rect x="0" y="0"  width="30" height="10" fill="#C6363C" />
+    <rect x="0" y="10" width="30" height="10" fill="#1E3A5F" />
+    <rect x="0" y="20" width="30" height="10" fill="#FFFFFF" />
   </svg>
 );
 
@@ -32,8 +31,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 bg-[#F4F1EA] border-b-[3px] border-[#09090B]" data-testid="navbar">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-4">
         <Link to="/" className="flex items-center gap-3 group" data-testid="logo-link">
-          <div className="w-12 h-8 border-[3px] border-[#09090B] brutal-shadow overflow-hidden group-hover:-translate-y-0.5 transition-transform">
-            <SerbianFlag size={48} />
+          <div className="border-[3px] border-[#09090B] overflow-hidden group-hover:-translate-y-0.5 transition-transform">
+            <SerbianFlag size={56} />
           </div>
           <span className="font-display text-xl sm:text-2xl tracking-tight hidden sm:block leading-tight">EUROBOT<br/>SRBIJA</span>
         </Link>
@@ -46,14 +45,16 @@ export default function Navbar() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Pretraži teme, tagove…"
-              className="brutal-input pl-12 py-2 text-sm"
+              style={{ paddingLeft: "3rem" }}
+              className="brutal-input py-2 text-sm"
             />
           </div>
         </form>
 
-        <Link to="/" className="hidden md:inline-flex brutal-btn brutal-btn--ghost" data-testid="nav-home">
-          <House weight="bold" size={16} /> Početna
-        </Link>
+        <div className="flex items-center gap-3 ml-auto">
+          <Link to="/" className="hidden md:inline-flex brutal-btn brutal-btn--ghost" data-testid="nav-home">
+            <House weight="bold" size={16} /> Početna
+          </Link>
 
         {user ? (
           <>
@@ -103,6 +104,7 @@ export default function Navbar() {
             <Link to="/register" className="brutal-btn" data-testid="nav-register">Registracija</Link>
           </>
         )}
+        </div>
       </div>
     </header>
   );

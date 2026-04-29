@@ -10,7 +10,7 @@ import { PushPin, Lock, Trash, ChatCircle, ArrowBendUpLeft } from "@phosphor-ico
 const resolveImg = (url) => !url ? null : url.startsWith("http") ? url : `${API.replace("/api","")}${url}`;
 const MAX_DEPTH = 5;
 
-function flattenTree(list) {
+function flattenTree(list, collapsed) {
   // Sort children under each parent by created_at, then walk in DFS order
   const childrenOf = {};
   list.forEach((c) => {
@@ -22,18 +22,33 @@ function flattenTree(list) {
   const walk = (parentKey, depth) => {
     const arr = childrenOf[parentKey] || [];
     arr.forEach((c) => {
-      out.push({ comment: c, depth });
-      walk(c.comment_id, depth + 1);
+      const kids = childrenOf[c.comment_id] || [];
+      const childCount = countDescendants(c.comment_id, childrenOf);
+      out.push({ comment: c, depth, childCount });
+      if (!collapsed.has(c.comment_id)) walk(c.comment_id, depth + 1);
     });
   };
   walk("__root__", 0);
   return out;
 }
 
-function CommentRow({ comment, depth, onVote, onDelete, threadLocked, replyingTo, setReplyingTo, replyBody, setReplyBody, onReply, busy }) {
+function countDescendants(id, childrenOf) {
+  const stack = [id];
+  let n = 0;
+  while (stack.length) {
+    const cur = stack.pop();
+    const kids = childrenOf[cur] || [];
+    n += kids.length;
+    for (const k of kids) stack.push(k.comment_id);
+  }
+  return n;
+}
+
+function CommentRow({ comment, depth, childCount, collapsed, onToggleCollapse, onVote, onDelete, threadLocked, replyingTo, setReplyingTo, replyBody, setReplyBody, onReply, busy }) {
   const c = comment;
   const avatar = resolveImg(c.author_avatar);
   const indent = Math.min(depth, MAX_DEPTH);
+  const isCollapsed = collapsed.has(c.comment_id);
   return (
     <div
       data-testid={`comment-${c.comment_id}`}
@@ -44,6 +59,16 @@ function CommentRow({ comment, depth, onVote, onDelete, threadLocked, replyingTo
         <VoteButtons targetId={c.comment_id} targetType="comment" initial={{ score: c.score, user_vote: c.user_vote }} onChange={onVote} vertical={true} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 text-sm flex-wrap">
+            {childCount > 0 && (
+              <button
+                onClick={() => onToggleCollapse(c.comment_id)}
+                className="w-5 h-5 border-2 border-[#09090B] bg-[#EFE4D2] text-[10px] font-bold flex items-center justify-center hover:bg-[#9B2C2C] hover:text-white"
+                aria-label={isCollapsed ? "Proširi" : "Sažmi"}
+                data-testid={`toggle-collapse-${c.comment_id}`}
+              >
+                {isCollapsed ? "+" : "−"}
+              </button>
+            )}
             <Link to={`/profile/${c.author_id}`} className="flex items-center gap-2 font-bold hover:text-[#9B2C2C]">
               <div className="w-6 h-6 border-2 border-[#09090B] bg-[#A23B47] overflow-hidden">
                 {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-white text-xs flex justify-center items-center h-full font-display">{c.author_name?.[0]?.toUpperCase()}</span>}
@@ -51,6 +76,9 @@ function CommentRow({ comment, depth, onVote, onDelete, threadLocked, replyingTo
               {c.author_name}
             </Link>
             <span className="text-xs text-zinc-500 font-mono">{new Date(c.created_at).toLocaleString()}</span>
+            {isCollapsed && childCount > 0 && (
+              <span className="text-xs font-bold text-[#1E3A5F]">[{childCount} skrivenih]</span>
+            )}
             <button onClick={() => onDelete(c.comment_id)} className="ml-auto text-zinc-400 hover:text-[#9B2C2C]" data-testid={`delete-comment-${c.comment_id}`} aria-label="Delete">
               <Trash size={14} weight="bold" />
             </button>
@@ -102,8 +130,17 @@ export default function Thread() {
   const [busy, setBusy] = useState(false);
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyBody, setReplyBody] = useState("");
+  const [collapsed, setCollapsed] = useState(() => new Set());
 
-  const flat = useMemo(() => flattenTree(comments), [comments]);
+  const toggleCollapse = (id) => {
+    setCollapsed((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id); else n.add(id);
+      return n;
+    });
+  };
+
+  const flat = useMemo(() => flattenTree(comments, collapsed), [comments, collapsed]);
 
   const load = async () => {
     try {
@@ -220,11 +257,14 @@ export default function Thread() {
         <div className="space-y-3">
           {flat.length === 0 ? (
             <div className="brutal-card p-6 text-center"><p className="font-display text-xl">JOŠ NEMA ODGOVORA</p><p className="text-sm">Budi prvi.</p></div>
-          ) : flat.map(({ comment, depth }) => (
+          ) : flat.map(({ comment, depth, childCount }) => (
             <CommentRow
               key={comment.comment_id}
               comment={comment}
               depth={depth}
+              childCount={childCount}
+              collapsed={collapsed}
+              onToggleCollapse={toggleCollapse}
               onVote={onVote}
               onDelete={deleteComment}
               onReply={postReply}

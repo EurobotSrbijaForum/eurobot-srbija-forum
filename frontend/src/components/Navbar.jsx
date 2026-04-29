@@ -34,7 +34,7 @@ export default function Navbar() {
           <div className="border-[3px] border-[#09090B] overflow-hidden group-hover:-translate-y-0.5 transition-transform">
             <SerbianFlag size={56} />
           </div>
-          <span className="font-display text-xl sm:text-2xl tracking-tight hidden sm:block leading-tight">EUROBOT<br/>SRBIJA</span>
+          <span className="font-display text-xl sm:text-2xl tracking-tight hidden sm:block leading-tight">EUROBOT<br/>FORUM</span>
         </Link>
 
         <form onSubmit={submitSearch} className="flex-1 max-w-md" data-testid="search-form">

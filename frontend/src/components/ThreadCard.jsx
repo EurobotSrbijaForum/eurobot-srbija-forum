@@ -23,7 +23,7 @@ export default function ThreadCard({ thread, onChange }) {
   return (
     <article className="brutal-card relative group" data-testid={`thread-card-${thread.thread_id}`}>
       <div className="flex">
-        <div className="p-3 flex flex-col items-center gap-1 border-r-[3px] border-[#09090B] bg-[#EFE4D2]">
+        <div className="p-2 sm:p-3 flex flex-col items-center gap-1 border-r-[3px] border-[#09090B] bg-[#EFE4D2]">
           <VoteButtons
             targetId={thread.thread_id}
             targetType="thread"
@@ -33,7 +33,7 @@ export default function ThreadCard({ thread, onChange }) {
           />
         </div>
 
-        <div className="flex-1 p-5 min-w-0">
+        <div className="flex-1 p-3 sm:p-5 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Link
               to={`/c/${thread.category}`}
@@ -59,7 +59,7 @@ export default function ThreadCard({ thread, onChange }) {
           </div>
 
           <Link to={`/thread/${thread.thread_id}`} data-testid={`thread-title-${thread.thread_id}`}>
-            <h3 className="font-display text-xl sm:text-2xl leading-tight hover:text-[#9B2C2C] transition-colors line-clamp-2">
+            <h3 className="font-display text-base sm:text-2xl leading-tight hover:text-[#9B2C2C] transition-colors line-clamp-2">
               {thread.title}
             </h3>
           </Link>

@@ -45,18 +45,18 @@ export default function Home({ category = null }) {
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [sort, category, tag]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8" data-testid="home-page">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8" data-testid="home-page">
       {!category && (
-        <section className="mb-8 brutal-card p-8 bg-[#EFE4D2]" data-testid="hero">
-          <div className="flex items-start gap-4 flex-wrap">
-            <Sparkle weight="fill" size={48} className="text-[#9B2C2C]" />
+        <section className="mb-6 sm:mb-8 brutal-card p-5 sm:p-8 bg-[#EFE4D2]" data-testid="hero">
+          <div className="flex items-start gap-3 sm:gap-4 flex-wrap">
+            <Sparkle weight="fill" className="text-[#9B2C2C] w-9 h-9 sm:w-12 sm:h-12 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <h1 className="font-display text-4xl sm:text-6xl leading-none">DOBRODOŠLI<br/>NA FORUM.</h1>
-              <p className="mt-3 max-w-xl text-base font-medium">Mesto za diskusije, projekte i druženje srpske Eurobot zajednice. Pridruži se razgovoru.</p>
-              <div className="mt-4 flex gap-3 flex-wrap font-mono text-sm">
-                <span className="bg-white border-2 border-[#09090B] px-3 py-1">{stats.threads} tema</span>
-                <span className="bg-white border-2 border-[#09090B] px-3 py-1">{stats.comments} komentara</span>
-                <span className="bg-white border-2 border-[#09090B] px-3 py-1">{stats.users} članova</span>
+              <h1 className="font-display text-3xl sm:text-6xl leading-none">DOBRODOŠLI<br/>NA FORUM.</h1>
+              <p className="mt-3 max-w-xl text-sm sm:text-base font-medium">Mesto za diskusije, projekte i druženje srpske Eurobot zajednice. Pridruži se razgovoru.</p>
+              <div className="mt-4 flex gap-2 sm:gap-3 flex-wrap font-mono text-xs sm:text-sm">
+                <span className="bg-white border-2 border-[#09090B] px-2 sm:px-3 py-1">{stats.threads} tema</span>
+                <span className="bg-white border-2 border-[#09090B] px-2 sm:px-3 py-1">{stats.comments} komentara</span>
+                <span className="bg-white border-2 border-[#09090B] px-2 sm:px-3 py-1">{stats.users} članova</span>
               </div>
             </div>
           </div>
@@ -66,10 +66,10 @@ export default function Home({ category = null }) {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
         <main>
           <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-            <h2 className="font-display text-3xl">
+            <h2 className="font-display text-2xl sm:text-3xl">
               {category ? `/c/${category}` : "NOVE TEME"}
             </h2>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {SORTS.map((s) => {
                 const Icon = s.icon;
                 const active = sort === s.key;
@@ -78,7 +78,7 @@ export default function Home({ category = null }) {
                     key={s.key}
                     data-testid={`sort-${s.key}`}
                     onClick={() => { params.set("sort", s.key); setParams(params); }}
-                    className="brutal-btn"
+                    className="brutal-btn !px-3 sm:!px-5 text-xs sm:text-sm"
                     style={{ background: active ? s.color : "white", color: active && !["#EFE4D2","#7A8B5C"].includes(s.color) ? "white" : "#09090B" }}
                   >
                     <Icon weight="bold" size={14} /> {s.label}

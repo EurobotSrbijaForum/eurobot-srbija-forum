@@ -55,8 +55,8 @@ function CommentRow({ comment, depth, childCount, collapsed, onToggleCollapse, o
   return (
     <div
       data-testid={`comment-${c.comment_id}`}
-      style={{ marginLeft: indent * 28 }}
-      className={indent > 0 ? "border-l-[3px] border-[#09090B] pl-4" : ""}
+      style={{ marginLeft: `min(${indent * 28}px, ${indent * 5}vw)` }}
+      className={indent > 0 ? "border-l-[3px] border-[#09090B] pl-2 sm:pl-4" : ""}
     >
       <div className="brutal-card p-4 flex gap-3">
         <VoteButtons targetId={c.comment_id} targetType="comment" initial={{ score: c.score, user_vote: c.user_vote }} onChange={onVote} vertical={true} />
@@ -295,8 +295,8 @@ export default function Thread() {
   const isAdmin = user?.role === "admin";
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6" data-testid="thread-page">
-      <article className="brutal-card p-6">
+    <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6" data-testid="thread-page">
+      <article className="brutal-card p-4 sm:p-6">
         {editingThread ? (
           <form onSubmit={(e) => { e.preventDefault(); saveThread(); }} className="space-y-3" data-testid="edit-thread-form">
             <select value={tEditCategory} onChange={(e) => setTEditCategory(e.target.value)} className="brutal-input">
@@ -318,7 +318,7 @@ export default function Thread() {
               {thread.is_locked && <span className="text-xs font-bold flex items-center gap-1 bg-[#09090B] text-white border-2 border-[#09090B] px-2 py-0.5 uppercase"><Lock weight="fill" size={12}/>Zaključano</span>}
               <span className="ml-auto text-xs font-mono text-zinc-500">{new Date(thread.created_at).toLocaleString()}{thread.edited_at && " · izmenjeno"}</span>
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl leading-tight" data-testid="thread-title">{thread.title}</h1>
+        <h1 className="font-display text-2xl sm:text-4xl leading-tight" data-testid="thread-title">{thread.title}</h1>
 
             <Link to={`/profile/${thread.author_id}`} className="inline-flex items-center gap-2 mt-3 text-sm font-bold hover:text-[#9B2C2C]">
               <div className="w-7 h-7 border-2 border-[#09090B] bg-[#A23B47] overflow-hidden">

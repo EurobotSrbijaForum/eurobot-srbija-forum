@@ -66,11 +66,11 @@ export default function Profile() {
   const avatar = resolveImg(profile.avatar_url);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8" data-testid="profile-page">
-      <div className="brutal-card p-6 bg-[#EFE4D2] mb-6 flex items-start gap-5 flex-wrap">
+    <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8" data-testid="profile-page">
+      <div className="brutal-card p-4 sm:p-6 bg-[#EFE4D2] mb-6 flex items-start gap-4 sm:gap-5 flex-wrap">
         <div className="relative">
-          <div className="w-24 h-24 border-[3px] border-[#09090B] brutal-shadow bg-[#A23B47] overflow-hidden">
-            {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : <span className="font-display text-white text-4xl flex items-center justify-center h-full">{profile.name?.[0]?.toUpperCase()}</span>}
+          <div className="w-20 h-20 sm:w-24 sm:h-24 border-[3px] border-[#09090B] brutal-shadow bg-[#A23B47] overflow-hidden">
+            {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : <span className="font-display text-white text-3xl sm:text-4xl flex items-center justify-center h-full">{profile.name?.[0]?.toUpperCase()}</span>}
           </div>
           {isMe && (
             <label className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border-[3px] border-[#09090B] flex items-center justify-center cursor-pointer hover:bg-[#7A8B5C]" data-testid="upload-avatar-btn">
@@ -91,11 +91,11 @@ export default function Profile() {
             </div>
           ) : (
             <>
-              <h1 className="font-display text-4xl flex items-center gap-2">
+              <h1 className="font-display text-3xl sm:text-4xl flex items-center gap-2 flex-wrap">
                 {profile.name}
                 {profile.role === "admin" && <span className="bg-[#09090B] text-white text-xs px-2 py-1 flex items-center gap-1 font-display"><ShieldStar weight="fill" size={12}/>ADMIN</span>}
               </h1>
-              <p className="text-sm font-mono text-zinc-700 mt-1">{profile.email || <span className="italic text-zinc-400">email skriven</span>}</p>
+              <p className="text-sm font-mono text-zinc-700 mt-1 break-all">{profile.email || <span className="italic text-zinc-400">email skriven</span>}</p>
               {profile.bio && <p className="mt-2">{profile.bio}</p>}
               <div className="mt-3 flex gap-3 font-mono text-sm flex-wrap">
                 <span className="bg-white border-2 border-[#09090B] px-3 py-1"><Lightning weight="bold" size={12} className="inline mr-1"/>{profile.karma} karma</span>
